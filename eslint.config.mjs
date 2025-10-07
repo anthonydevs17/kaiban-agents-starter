@@ -19,7 +19,10 @@ export default [
       },
       parser: (await import('@typescript-eslint/parser')).default,
       parserOptions: {
-        project: path.join(__dirname, 'tsconfig.json'),
+        project: [
+          path.join(__dirname, 'tsconfig.json'),
+          path.join(__dirname, 'tsconfig.tests.json'),
+        ],
         tsconfigRootDir: __dirname,
       },
     },
@@ -37,6 +40,18 @@ export default [
       'n/no-missing-import': 'off',
       'promise/always-return': 'off',
       'promise/catch-or-return': 'off',
+    },
+  },
+  {
+    files: ['tests/**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: (await import('@typescript-eslint/parser')).default,
+      parserOptions: {
+        project: [
+          path.join(__dirname, 'tsconfig.tests.json'),
+        ],
+        tsconfigRootDir: __dirname,
+      },
     },
   },
   {
