@@ -47,9 +47,7 @@ export default [
     languageOptions: {
       parser: (await import('@typescript-eslint/parser')).default,
       parserOptions: {
-        project: [
-          path.join(__dirname, 'tsconfig.tests.json'),
-        ],
+        project: [path.join(__dirname, 'tsconfig.tests.json')],
         tsconfigRootDir: __dirname,
       },
     },
