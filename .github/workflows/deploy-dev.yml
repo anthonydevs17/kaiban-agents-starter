@@ -17,6 +17,15 @@ jobs:
         with:
           node-version: 22
 
+      - name: Create envfile
+        run: |
+          echo "LOG_LEVEL=${{ vars.LOG_LEVEL }}" >> .env
+          echo "PORT=4000" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "KAIBAN_API_BASE_URL=${{ vars.KAIBAN_API_BASE_URL }}" >> .env
+          echo "KAIBAN_API_TOKEN=${{ secrets.KAIBAN_API_TOKEN }}" >> .env
+          echo "A2A_BASE_URL=${{ vars.A2A_BASE_URL }}" >> .env
+
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 

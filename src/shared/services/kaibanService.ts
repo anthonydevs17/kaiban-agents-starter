@@ -11,13 +11,13 @@ let _kaibanClient: ReturnType<typeof createKaibanClient> | null = null;
  * Returns a singleton Kaiban SDK client when env variables are present.
  * If configuration is missing, returns null to allow graceful no-op usage.
  */
-export function getKaibanClient() {
+export function getKaibanClient(tenant?: string) {
   if (_kaibanClient) return _kaibanClient;
-  const tenant = process.env.KAIBAN_TENANT;
+  const tenantToUse = process.env.KAIBAN_TENANT || tenant;
   const token = process.env.KAIBAN_API_KEY;
-  const baseUrl = process.env.KAIBAN_API_BASE;
-  if (!tenant || !token) return null;
-  _kaibanClient = createKaibanClient({ tenant, token, baseUrl });
+  const baseUrl = process.env.KAIBAN_API_BASE_URL;
+  if (!tenantToUse || !token) return null;
+  _kaibanClient = createKaibanClient({ tenant: tenantToUse, token, baseUrl });
   return _kaibanClient;
 }
 
@@ -39,9 +39,9 @@ export function extractIdsFromMetadata(
 /**
  * Creates a card activity; no-ops if SDK is not configured.
  */
-export async function apiCreateActivity(cardId: string, activity: ActivityCreate) {
+export async function apiCreateActivity(cardId: string, activity: ActivityCreate, tenant?: string) {
   try {
-    const client = getKaibanClient();
+    const client = getKaibanClient(tenant);
     if (!client) return;
     await client.activities.create({ card_id: cardId, body: activity });
   } catch (err) {
@@ -52,9 +52,9 @@ export async function apiCreateActivity(cardId: string, activity: ActivityCreate
 /**
  * Moves a card to the given column and creates an audit activity; no-ops if SDK is not configured.
  */
-export async function apiMoveCardToColumn(cardId: string, newColumnKey: string) {
+export async function apiMoveCardToColumn(cardId: string, newColumnKey: string, tenant?: string) {
   try {
-    const client = getKaibanClient();
+    const client = getKaibanClient(tenant);
     if (!client) return;
     await client.cards.moveToColumn({ id: cardId, new_column_key: newColumnKey });
   } catch (err) {
