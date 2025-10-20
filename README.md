@@ -1,4 +1,4 @@
-# Kaiban A2A Agent Starter
+# Kaiban Agent Starter
 
 A minimal template to build A2A agents connected to the Kaiban Platform using `@a2a-js/sdk` and `kaiban-sdk` (optional). It ships with TypeScript, ESLint, Prettier, Husky + lint-staged, Vitest, a simple Express A2A server, and two sample agents.
 
