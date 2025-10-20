@@ -8,9 +8,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "tsx -r tsconfig-paths/register src/server/index.ts",
+    "dev": "tsx --watch -r tsconfig-paths/register src/index.ts",
     "build": "tsc -p tsconfig.json",
-    "start": "node -r tsconfig-paths/register dist/server/index.js",
+    "start": "node -r tsconfig-paths/register dist/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -29,9 +29,11 @@
   },
   "dependencies": {
     "@a2a-js/sdk": "^0.3.4",
+    "@ai-sdk/openai": "^2.0.53",
+    "@kaiban/sdk": "^0.1.8",
+    "@mastra/core": "^0.21.1",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "kaiban-sdk": "latest",
     "pino": "^10.0.0",
     "tsconfig-paths": "^4.2.0",
     "uuid": "^13.0.0"

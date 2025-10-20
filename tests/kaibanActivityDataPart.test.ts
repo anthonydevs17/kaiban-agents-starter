@@ -17,7 +17,7 @@ afterAll(async () => {
 });
 
 describe('kaiban_activity data part handling', () => {
-  it('basic assistant listens to kaiban_activity without error and completes', async () => {
+  it('Visit Planner agent listens to kaiban_activity without error and completes', async () => {
     const params = {
       message: {
         kind: 'message' as const,
@@ -25,15 +25,32 @@ describe('kaiban_activity data part handling', () => {
         role: 'user' as const,
         metadata: { card_id: 'c1', board_id: 'b1', team_id: 't1' },
         parts: [
-          { kind: 'text' as const, text: 'process this activity' },
-          { kind: 'data' as const, data: { type: 'kaiban_activity', payload: { foo: 'bar' } } },
+          {
+            kind: 'data' as const,
+            data: {
+              type: 'kaiban_activity',
+              activity: {
+                type: 'CARD_CREATED',
+                card_id: 'test-card-id',
+                board_id: 'test-board-id',
+                team_id: 'test-team-id',
+                actor: {
+                  id: 'test-user',
+                  type: 'user',
+                  name: 'Test User',
+                },
+              },
+            },
+          },
         ],
       },
     };
 
-    const client = await createClientFromServer(baseUrl, '/agents/basicAssistant/a2a');
+    const client = await createClientFromServer(baseUrl, '/agents/visitPlanner/a2a');
     const rpc = await client.sendMessage(params);
     const result = (rpc as any).result;
+
+    // Verify the result is either a message or task
     expect(result.kind === 'message' || result.kind === 'task').toBeTruthy();
   });
 });

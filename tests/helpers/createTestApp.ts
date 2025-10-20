@@ -1,15 +1,16 @@
-import express from 'express';
 import { A2AExpressApp } from '@a2a-js/sdk/server/express';
+import express from 'express';
 
-import { basicAssistantRequestHandler } from '../../src/agents/basic-assistant/handler';
-import { metaAssistantRequestHandler } from '../../src/agents/meta-assistant/handler';
+import { visitPlannerAgentHandler } from '../../src/agents/visit-planner-agent/handler';
 
 /**
- * Creates an Express app with both sample agents mounted under their A2A base paths.
+ * Creates an Express app with the Visit Planner Agent mounted under its A2A base path.
+ * Used for integration testing.
  */
 export function createTestApp() {
   const app = express();
 
+  // CORS middleware for test environment
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -21,8 +22,8 @@ export function createTestApp() {
     next();
   });
 
-  new A2AExpressApp(basicAssistantRequestHandler).setupRoutes(app, '/agents/basicAssistant/a2a');
-  new A2AExpressApp(metaAssistantRequestHandler).setupRoutes(app, '/agents/metaAssistant/a2a');
+  // Mount Visit Planner Agent
+  new A2AExpressApp(visitPlannerAgentHandler).setupRoutes(app, '/agents/visitPlanner/a2a');
 
   return app;
 }
