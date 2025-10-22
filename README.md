@@ -5,7 +5,7 @@
 [![A2A Protocol](https://img.shields.io/badge/A2A-0.3.0-orange.svg)](https://github.com/google/a2a-protocol)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A production-ready starter template for building A2A (Agent-to-Agent) protocol compliant agents that integrate with the [Kaiban platform](https://kaiban.io). This example demonstrates a **Visit Planner Agent** that recommends tourist and historical places to visit in cities.
+A production-ready starter template for building agents that integrate with the [Kaiban platform](https://kaiban.io). This example demonstrates a **Visit Planner Agent** that recommends tourist and historical places to visit in cities.
 
 ## 📖 Table of Contents
 
