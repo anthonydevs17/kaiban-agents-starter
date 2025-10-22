@@ -73,14 +73,9 @@ OPENAI_API_KEY=sk-proj-your-openai-api-key
 
 # PORT=4000
 # A2A_BASE_URL=http://localhost:4000
-# KAIBAN_API_URL=https://your-tenant-dev.kaiban.io/api
+# KAIBAN_API_URL=https://your-tenant.kaiban.io/api
 EOF
 ```
-
-**Important**: Replace the placeholder values with your actual credentials:
-
-- Get Kaiban credentials from [kaiban.io](https://kaiban.io)
-- Get OpenAI API key from [OpenAI Platform](https://platform.openai.com/api-keys)
 
 ### 4. Run the Agent
 
@@ -117,27 +112,29 @@ Your agent will be available at:
 
 | Variable           | Description                                | Example        |
 | ------------------ | ------------------------------------------ | -------------- |
-| `KAIBAN_TENANT`    | Your Kaiban platform tenant identifier     | `my-company`   |
+| `KAIBAN_TENANT`    | Your Kaiban platform tenant identifier     | `agi`          |
 | `KAIBAN_API_TOKEN` | Authentication token for Kaiban API        | `kb_abc123...` |
-| `KAIBAN_AGENT_ID`  | Unique identifier for this agent in Kaiban | `agent_xyz789` |
+| `KAIBAN_AGENT_ID`  | Unique identifier for this agent in Kaiban | `xyz789Fqn...` |
 | `OPENAI_API_KEY`   | OpenAI API key for GPT-4o-mini model       | `sk-proj-...`  |
 
 #### Optional Variables
 
-| Variable         | Description                                          | Default                               |
-| ---------------- | ---------------------------------------------------- | ------------------------------------- |
-| `PORT`           | Server port                                          | `4000`                                |
-| `A2A_BASE_URL`   | Public base URL for the agent (for ngrok/production) | `http://localhost:4000`               |
-| `KAIBAN_API_URL` | Kaiban API base URL                                  | `https://${tenant}-dev.kaiban.io/api` |
+| Variable         | Description                                          | Default                           |
+| ---------------- | ---------------------------------------------------- | --------------------------------- |
+| `PORT`           | Server port                                          | `4000`                            |
+| `A2A_BASE_URL`   | Public base URL for the agent (for ngrok/production) | `http://localhost:4000`           |
+| `KAIBAN_API_URL` | Kaiban API base URL                                  | `https://${tenant}.kaiban.io/api` |
 
 ### Getting Your Credentials
 
-1. **Kaiban Credentials**: Sign up at [kaiban.io](https://kaiban.io) and navigate to:
-   - Settings → API Tokens to get your `KAIBAN_API_TOKEN`
-   - Agents → Create Agent to get your `KAIBAN_AGENT_ID`
-   - Your tenant name is in your dashboard URL: `https://YOUR-TENANT-dev.kaiban.io`
+**Kaiban credentials**: Sign up at [kaiban.io](https://kaiban.io) and navigate to:
 
-2. **OpenAI API Key**: Get your key from [OpenAI Platform](https://platform.openai.com/api-keys)
+- Dev Tools → To get your `TENANT` and `KAIBAN_API_TOKEN`
+- Onboard → Create Agent to get your `KAIBAN_AGENT_ID`
+
+> Kaiban uses **airline IATA codes** as tenant identifiers—`cm` for Copa Airlines, `nk` for Spirit Airlines, etc. Your tenant code appears in your dashboard URL: `https://{IATA-CODE}.kaiban.io`. Examples in this guide use `agi` as a placeholder.
+
+**OpenAI API Key**: Get your key from [OpenAI Platform](https://platform.openai.com/api-keys)
 
 ### Using ngrok for Development
 
