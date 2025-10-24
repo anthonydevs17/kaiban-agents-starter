@@ -66,7 +66,7 @@ export class KaibanController {
 
     // Set default base URL for Kaiban API if not provided
     if (!baseUrl) {
-      baseUrl = `https://${tenant}-dev.kaiban.io/api`;
+      baseUrl = `https://${tenant}.kaiban.io/api`;
     }
 
     // Initialize Kaiban SDK client with credentials
