@@ -13,14 +13,14 @@
  * @module index
  */
 
-import { A2AExpressApp } from '@a2a-js/sdk/server/express';
 import 'dotenv/config';
 import express from 'express';
+import localtunnel from 'localtunnel';
 
-import { visitPlannerAgentHandler } from './agents/visit-planner-agent/handler';
+import { setupVisitPlannerAgentRoutes } from './agents/visit-planner-agent/handler';
 import { createLogger } from './shared/logger';
 
-const logger = createLogger('Server');
+const logger = createLogger('A2A Server');
 
 /**
  * Express application instance serving as the HTTP server foundation.
@@ -66,21 +66,6 @@ app.use((req, res, next) => {
 });
 
 /**
- * A2A (Agent-to-Agent) Protocol Routes Configuration
- *
- * @description Sets up the A2A protocol endpoints following Google's A2A specification:
- * - **Base Path / Execute**: POST /agents/visitPlanner/a2a
- * - **Agent Card Discovery**: GET /agents/visitPlanner/a2a/.well-known/agent-card.json
- *
- * The A2AExpressApp automatically creates these endpoints:
- * - Agent discovery via .well-known/agent-card.json
- * - Task execution with streaming responses via Server-Sent Events (SSE)
- *
- * @see {@link https://github.com/google/a2a-protocol} A2A Protocol Specification
- */
-new A2AExpressApp(visitPlannerAgentHandler).setupRoutes(app, '/agents/visitPlanner/a2a');
-
-/**
  * HTTP Server Initialization
  *
  * Starts the Express server on the configured port (default: 4000).
@@ -103,8 +88,56 @@ new A2AExpressApp(visitPlannerAgentHandler).setupRoutes(app, '/agents/visitPlann
  * - OPENAI_API_KEY: OpenAI API key for GPT-4o-mini model (required)
  */
 const port = process.env.PORT || 4000;
-app.listen(port, () => {
-  logger.info(`🚀 A2A Server Running on http://localhost:${port}`);
-  logger.info(`📝 Agent Card:`);
-  logger.info(` - http://localhost:${port}/agents/visitPlanner/a2a/.well-known/agent-card.json`);
+let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
+
+/**
+ * A2A (Agent-to-Agent) Protocol Routes Configuration
+ *
+ * @description Sets up the A2A protocol endpoints following Google's A2A specification:
+ * - **Base Path / Execute**: POST /agents/visitPlanner/a2a
+ * - **Agent Card Discovery**: GET /agents/visitPlanner/a2a/.well-known/agent-card.json
+ *
+ * The A2AExpressApp automatically creates these endpoints:
+ * - Agent discovery via .well-known/agent-card.json
+ * - Task execution with streaming responses via Server-Sent Events (SSE)
+ *
+ * @see {@link https://github.com/google/a2a-protocol} A2A Protocol Specification
+ */
+
+app.listen(port, async () => {
+  // Setup localtunnel in development mode AFTER server starts
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      const tunnel = await localtunnel({ port: port as number });
+      baseUrl = tunnel.url; // Update baseUrl with tunnel URL
+    } catch (err) {
+      logger.error({ err }, 'Failed to create tunnel');
+      process.exit(1);
+    }
+  }
+
+  // Setup agent routes
+  const { agentUrl, cardUrl } = setupVisitPlannerAgentRoutes(app, baseUrl);
+
+  console.log(`
+   _  __     _ _                 
+  | |/ /__ _(_) |__  __ _ _ _    
+  | ' </ _\` | | '_ \\/ _\` | ' \\   
+  |_|\\_\\__,_|_|_.__/\\__,_|_||_|  
+   ___  _            _            
+  / __|| |_  __ _ _ _| |_  ___  _ _ 
+  \\__ \\|  _|/ _\` | '_|  _|/ -_)| '_|
+  |___/ \\__|\\__,_|_|  \\__|\\___||_|  
+                                v1.0.0
+  
+            |
+      --@--(-)--@--
+  
+  A2A Server Endpoints:
+  ------------------------------------------------------------
+    -> Card:  ${cardUrl}
+    -> Agent: ${agentUrl}
+  ------------------------------------------------------------
+  `);
+  logger.info(`🚀 Listening Requests`);
 });

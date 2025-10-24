@@ -13,14 +13,16 @@
  */
 
 import { DefaultRequestHandler } from '@a2a-js/sdk/server';
+import { A2AExpressApp } from '@a2a-js/sdk/server/express';
+import express from 'express';
 
 import { visitPlannerAgentCard } from './card';
 import { tasksStore, visitPlannerAgentExecutor } from './executor';
 
 /**
- * A2A Request Handler for the Visit Planner Agent
+ * Create A2A Request Handler for the Visit Planner Agent
  *
- * @description This handler integrates three core components:
+ * @description This function creates a handler that integrates three core components:
  *
  * 1. **Agent Card** (visitPlannerAgentCard):
  *    - Provides agent metadata for A2A protocol discovery
@@ -37,8 +39,8 @@ import { tasksStore, visitPlannerAgentExecutor } from './executor';
  *    - Manages the execution lifecycle (submitted → working → completed)
  *    - Integrates with Kaiban platform and AI models
  *
- * @constant
- * @type {DefaultRequestHandler}
+ * @param baseUrl - The base URL for the server (e.g., http://localhost:4000 or https://tunnel-url.loca.lt)
+ * @returns {DefaultRequestHandler} Configured handler instance
  *
  * @remarks
  * The DefaultRequestHandler from @a2a-js/sdk automatically:
@@ -48,11 +50,31 @@ import { tasksStore, visitPlannerAgentExecutor } from './executor';
  * - Serves the agent card at the .well-known endpoint
  * - Validates incoming requests against the A2A specification
  *
+ * @example
+ * ```typescript
+ * // With localhost
+ * const handler = createVisitPlannerAgentHandler('http://localhost:4000');
+ * // Agent URL will be: http://localhost:4000/agents/visitPlanner/a2a
+ *
+ * // With tunnel
+ * const handler = createVisitPlannerAgentHandler('https://abc123.loca.lt');
+ * // Agent URL will be: https://abc123.loca.lt/agents/visitPlanner/a2a
+ * ```
+ *
  * @see {@link visitPlannerAgentCard} for agent metadata configuration
  * @see {@link visitPlannerAgentExecutor} for execution logic implementation
  */
-export const visitPlannerAgentHandler = new DefaultRequestHandler(
-  visitPlannerAgentCard,
-  tasksStore,
-  visitPlannerAgentExecutor,
-);
+export const createVisitPlannerAgentHandler = (agentUrl: string) => {
+  return new DefaultRequestHandler(
+    visitPlannerAgentCard(agentUrl), // Create agent card with complete endpoint URL
+    tasksStore,
+    visitPlannerAgentExecutor,
+  );
+};
+
+export const setupVisitPlannerAgentRoutes = (app: express.Express, baseUrl: string) => {
+  const path = '/visitPlanner/a2a';
+  const agentUrl = `${baseUrl}${path}`;
+  new A2AExpressApp(createVisitPlannerAgentHandler(agentUrl)).setupRoutes(app, path);
+  return { agentUrl, cardUrl: `${agentUrl}/.well-known/agent-card.json` };
+};

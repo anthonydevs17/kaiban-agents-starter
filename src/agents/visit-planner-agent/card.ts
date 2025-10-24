@@ -14,22 +14,23 @@ import { AgentCard } from '@a2a-js/sdk';
 /**
  * Agent Card for Visit Planner Agent
  *
- * @description This card provides discovery information for the A2A protocol:
+ * @description This function returns the agent card with discovery information for the A2A protocol:
  * - Agent identity (name, version, description)
  * - Endpoint URL for agent communication
  * - Supported input/output modes
  * - Available skills and capabilities
  * - Protocol version compatibility
  *
- * @remarks The URL field uses A2A_BASE_URL environment variable:
- * - Development: Defaults to http://localhost:4000
- * - Ngrok/Tunneling: Set to your ngrok URL (e.g., https://abc123.ngrok-free.app)
- * - Production: Set to your production domain (e.g., https://api.yourapp.com)
+ * @param url - The complete agent endpoint URL (e.g., http://localhost:4000/agents/visitPlanner/a2a or https://tunnel-url.loca.lt/agents/visitPlanner/a2a)
+ * @returns {AgentCard} The agent card configuration
  *
- * @constant
- * @type {AgentCard}
+ * @example
+ * ```typescript
+ * const card = visitPlannerAgentCard('http://localhost:4000/agents/visitPlanner/a2a');
+ * // Returns agent card with url: 'http://localhost:4000/agents/visitPlanner/a2a'
+ * ```
  */
-export const visitPlannerAgentCard: AgentCard = {
+export const visitPlannerAgentCard = (url: string): AgentCard => ({
   name: 'Visit Planner Agent',
   description: 'Agent that recommends places to visit in a city',
 
@@ -39,8 +40,8 @@ export const visitPlannerAgentCard: AgentCard = {
   // Agent version for tracking changes and updates
   version: '0.1.0',
 
-  // Public endpoint URL - uses A2A_BASE_URL env var or localhost default
-  url: `${process.env.A2A_BASE_URL || `http://localhost:4000`}/agents/visitPlanner/a2a`,
+  // Public endpoint URL - complete agent endpoint URL
+  url,
 
   // Agent accepts text-based input from users
   defaultInputModes: ['text'],
@@ -65,4 +66,4 @@ export const visitPlannerAgentCard: AgentCard = {
     pushNotifications: false, // Does not support push notifications
     stateTransitionHistory: false, // Does not maintain state history
   },
-};
+});
