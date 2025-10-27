@@ -15,7 +15,6 @@
 
 import 'dotenv/config';
 import express from 'express';
-import localtunnel from 'localtunnel';
 
 import { setupVisitPlannerAgentRoutes } from './agents/visit-planner-agent/handler';
 import { createLogger } from './shared/logger';
@@ -106,15 +105,15 @@ let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
 
 app.listen(port, async () => {
   // Setup localtunnel in development mode AFTER server starts
-  if (process.env.NODE_ENV === 'development') {
-    try {
-      const tunnel = await localtunnel({ port: port as number });
-      baseUrl = tunnel.url; // Update baseUrl with tunnel URL
-    } catch (err) {
-      logger.error({ err }, 'Failed to create tunnel');
-      process.exit(1);
-    }
-  }
+  // if (process.env.NODE_ENV === 'development') {
+  //   try {
+  //     const tunnel = await localtunnel({ port: port as number });
+  //     baseUrl = tunnel.url; // Update baseUrl with tunnel URL
+  //   } catch (err) {
+  //     logger.error({ err }, 'Failed to create tunnel');
+  //     process.exit(1);
+  //   }
+  // }
 
   // Setup agent routes
   const { agentUrl, cardUrl } = setupVisitPlannerAgentRoutes(app, baseUrl);
