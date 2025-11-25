@@ -84,7 +84,6 @@ IMPORTANT:
   // Anthropic Claude API format for Bedrock
   const requestBody = {
     anthropic_version: 'bedrock-2023-05-31',
-    reasoning_effort: 'high',
     max_tokens: 4000,
     system: systemPrompt,
     messages: [
