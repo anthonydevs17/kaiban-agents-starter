@@ -1,8 +1,8 @@
 /**
- * @fileoverview Main Server Entry Point for Visit Planner Agent
+ * @fileoverview Main Server Entry Point for Kaiban Agents
  *
  * This is the main application entry point that bootstraps the Express server
- * and configures the A2A (Agent-to-Agent) protocol endpoints for the Visit Planner Agent.
+ * and configures the A2A (Agent-to-Agent) protocol endpoints for multiple agents.
  *
  * The server provides:
  * - A2A protocol compliance for agent communication
@@ -16,6 +16,7 @@
 import 'dotenv/config';
 import express from 'express';
 
+import { setupAirportServicesAgentRoutes } from './agents/airport-services-agent/handler';
 import { setupVisitPlannerAgentRoutes } from './agents/visit-planner-agent/handler';
 import { createLogger } from './shared/logger';
 
@@ -73,8 +74,12 @@ app.use((req, res, next) => {
  * @constant {number} port - Server port from environment variable or default 4000
  *
  * @description Available Endpoints:
- * - Agent Discovery: GET /agents/visitPlanner/a2a/.well-known/agent-card.json
- * - Execute Task: POST /agents/visitPlanner/a2a
+ * - Visit Planner Agent:
+ *   - Discovery: GET /agents/visitPlanner/a2a/.well-known/agent-card.json
+ *   - Execute: POST /agents/visitPlanner/a2a
+ * - Airport Services Advisor Agent:
+ *   - Discovery: GET /agents/airportServices/a2a/.well-known/agent-card.json
+ *   - Execute: POST /agents/airportServices/a2a
  *
  * @remarks Environment Variables:
  * - PORT: Server port (optional, defaults to 4000)
@@ -82,9 +87,13 @@ app.use((req, res, next) => {
  *   Used in agent card for external access. Useful for ngrok, tunneling, or production domains.
  * - KAIBAN_TENANT: Kaiban platform tenant identifier (required)
  * - KAIBAN_API_TOKEN: Authentication token for Kaiban API (required)
- * - KAIBAN_AGENT_ID: Unique identifier for this agent in Kaiban (required)
- * - KAIBAN_API_URL: Kaiban API base URL (optional, defaults to https://${tenant}-dev.kaiban.io/api)
- * - OPENAI_API_KEY: OpenAI API key for GPT-4o-mini model (required)
+ * - KAIBAN_AGENT_ID: Unique identifier for Visit Planner agent in Kaiban (required)
+ * - KAIBAN_AIRPORT_AGENT_ID: Unique identifier for Airport Services Advisor agent in Kaiban (optional, falls back to KAIBAN_AGENT_ID)
+ * - KAIBAN_API_URL: Kaiban API base URL (optional, defaults to https://${tenant}.kaiban.io/api)
+ * - OPENAI_API_KEY: OpenAI API key for GPT-4o-mini model (required for Visit Planner)
+ * - AWS_REGION: AWS region for Bedrock (optional, defaults to us-east-1)
+ * - AWS_ACCESS_KEY_ID: AWS access key for Bedrock (required for Airport Services Advisor)
+ * - AWS_SECRET_ACCESS_KEY: AWS secret key for Bedrock (required for Airport Services Advisor)
  */
 const port = process.env.PORT || 4000;
 let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
@@ -93,8 +102,8 @@ let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
  * A2A (Agent-to-Agent) Protocol Routes Configuration
  *
  * @description Sets up the A2A protocol endpoints following Google's A2A specification:
- * - **Base Path / Execute**: POST /agents/visitPlanner/a2a
- * - **Agent Card Discovery**: GET /agents/visitPlanner/a2a/.well-known/agent-card.json
+ * - **Visit Planner Agent**: POST /agents/visitPlanner/a2a, GET /agents/visitPlanner/a2a/.well-known/agent-card.json
+ * - **Airport Services Advisor Agent**: POST /agents/airportServices/a2a, GET /agents/airportServices/a2a/.well-known/agent-card.json
  *
  * The A2AExpressApp automatically creates these endpoints:
  * - Agent discovery via .well-known/agent-card.json
@@ -116,7 +125,8 @@ app.listen(port, async () => {
   // }
 
   // Setup agent routes
-  const { agentUrl, cardUrl } = setupVisitPlannerAgentRoutes(app, baseUrl);
+  const visitPlanner = setupVisitPlannerAgentRoutes(app, baseUrl);
+  const airportServices = setupAirportServicesAgentRoutes(app, baseUrl);
 
   console.log(`
    _  __     _ _                 
@@ -134,8 +144,13 @@ app.listen(port, async () => {
   
   A2A Server Endpoints:
   ------------------------------------------------------------
-    -> Card:  ${cardUrl}
-    -> Agent: ${agentUrl}
+  Visit Planner Agent:
+    -> Card:  ${visitPlanner.cardUrl}
+    -> Agent: ${visitPlanner.agentUrl}
+  
+  Airport Services Advisor Agent:
+    -> Card:  ${airportServices.cardUrl}
+    -> Agent: ${airportServices.agentUrl}
   ------------------------------------------------------------
   `);
   logger.info(`🚀 Listening Requests`);
