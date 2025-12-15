@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 export default [
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
-    ignores: ['dist/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', 'examples/**'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
