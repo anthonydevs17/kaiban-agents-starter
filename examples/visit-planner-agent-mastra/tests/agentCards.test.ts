@@ -17,14 +17,14 @@ afterAll(async () => {
 });
 
 describe('Agent Cards', () => {
-  it('publishes Sample agent card', async () => {
-    const client = new A2AClient(`${baseUrl}/agents/sample/a2a`);
+  it('publishes Visit Planner agent card', async () => {
+    const client = new A2AClient(`${baseUrl}/agents/visitPlanner/a2a`);
     const card = await client.getAgentCard();
 
     // Verify card structure
     expect(card).toBeTruthy();
-    expect(card.name).toBe('Sample Agent');
-    expect(card.description).toBe('Template agent for building custom A2A protocol agents');
+    expect(card.name).toBe('Visit Planner Agent');
+    expect(card.description).toBe('Agent that recommends places to visit in a city');
     expect(card.protocolVersion).toBe('0.3.0');
     expect(card.version).toBe('0.1.0');
 
@@ -35,7 +35,7 @@ describe('Agent Cards', () => {
     expect(card.capabilities).toBeTypeOf('object');
 
     // Verify URL contains the correct path
-    expect(card.url).toContain('/agents/sample/a2a');
+    expect(card.url).toContain('/agents/visitPlanner/a2a');
 
     // Verify input/output modes
     expect(card.defaultInputModes).toEqual(['text']);
@@ -44,8 +44,8 @@ describe('Agent Cards', () => {
     // Verify skills
     expect(card.skills).toBeDefined();
     expect(card.skills).toHaveLength(1);
-    expect(card.skills[0].id).toBe('agent-sample');
-    expect(card.skills[0].name).toBe('Sample Agent');
+    expect(card.skills[0].id).toBe('visit-planner');
+    expect(card.skills[0].name).toBe('Visit Planner');
 
     // Verify capabilities
     expect(card.capabilities.streaming).toBe(true);

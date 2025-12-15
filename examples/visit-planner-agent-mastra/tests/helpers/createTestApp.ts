@@ -1,10 +1,10 @@
 import { A2AExpressApp } from '@a2a-js/sdk/server/express';
 import express from 'express';
 
-import { createSampleAgentHandler } from '../../src/agents/sample/handler';
+import { createVisitPlannerAgentHandler } from '../../src/agents/visit-planner-agent/handler';
 
 /**
- * Creates an Express app with the Sample Agent mounted under its A2A base path.
+ * Creates an Express app with the Visit Planner Agent mounted under its A2A base path.
  * Used for integration testing.
  *
  * @param baseUrl - The base URL of the test server (e.g., 'http://127.0.0.1:12345')
@@ -24,11 +24,11 @@ export function createTestApp(baseUrl: string) {
     next();
   });
 
-  // Mount Sample Agent
-  const agentPath = '/agents/sample/a2a';
+  // Mount Visit Planner Agent
+  const agentPath = '/agents/visitPlanner/a2a';
   const agentUrl = `${baseUrl}${agentPath}`;
-  const sampleAgentHandler = createSampleAgentHandler(agentUrl);
-  new A2AExpressApp(sampleAgentHandler).setupRoutes(app, agentPath);
+  const visitPlannerAgentHandler = createVisitPlannerAgentHandler(agentUrl);
+  new A2AExpressApp(visitPlannerAgentHandler).setupRoutes(app, agentPath);
 
   return app;
 }

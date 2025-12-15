@@ -17,14 +17,16 @@ afterAll(async () => {
 });
 
 describe('Agent Cards', () => {
-  it('publishes Sample agent card', async () => {
-    const client = new A2AClient(`${baseUrl}/agents/sample/a2a`);
+  it('publishes Airport Services Advisor agent card', async () => {
+    const client = new A2AClient(`${baseUrl}/agents/airportServices/a2a`);
     const card = await client.getAgentCard();
 
     // Verify card structure
     expect(card).toBeTruthy();
-    expect(card.name).toBe('Sample Agent');
-    expect(card.description).toBe('Template agent for building custom A2A protocol agents');
+    expect(card.name).toBe('Airport Services Advisor Agent');
+    expect(card.description).toBe(
+      'Agent that recommends airport services, lounges, restaurants, and amenities based on airport and travel preferences',
+    );
     expect(card.protocolVersion).toBe('0.3.0');
     expect(card.version).toBe('0.1.0');
 
@@ -35,7 +37,7 @@ describe('Agent Cards', () => {
     expect(card.capabilities).toBeTypeOf('object');
 
     // Verify URL contains the correct path
-    expect(card.url).toContain('/agents/sample/a2a');
+    expect(card.url).toContain('/agents/airportServices/a2a');
 
     // Verify input/output modes
     expect(card.defaultInputModes).toEqual(['text']);
@@ -44,8 +46,8 @@ describe('Agent Cards', () => {
     // Verify skills
     expect(card.skills).toBeDefined();
     expect(card.skills).toHaveLength(1);
-    expect(card.skills[0].id).toBe('agent-sample');
-    expect(card.skills[0].name).toBe('Sample Agent');
+    expect(card.skills[0].id).toBe('airport-services-advisor');
+    expect(card.skills[0].name).toBe('Airport Services Advisor');
 
     // Verify capabilities
     expect(card.capabilities.streaming).toBe(true);

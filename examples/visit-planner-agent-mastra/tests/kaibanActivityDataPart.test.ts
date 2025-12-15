@@ -17,7 +17,7 @@ afterAll(async () => {
 });
 
 describe('kaiban_activity data part handling', () => {
-  it('Sample agent listens to kaiban_activity without error and completes', async () => {
+  it('Visit Planner agent listens to kaiban_activity without error and completes', async () => {
     const params = {
       message: {
         kind: 'message' as const,
@@ -46,7 +46,7 @@ describe('kaiban_activity data part handling', () => {
       },
     };
 
-    const client = await createClientFromServer(baseUrl, '/agents/sample/a2a');
+    const client = await createClientFromServer(baseUrl, '/agents/visitPlanner/a2a');
     const rpc = await client.sendMessage(params);
     const result = (rpc as any).result;
 

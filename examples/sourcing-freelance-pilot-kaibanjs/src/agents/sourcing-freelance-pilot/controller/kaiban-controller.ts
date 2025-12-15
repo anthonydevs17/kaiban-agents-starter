@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Kaiban Controller for Pilot Sourcing Agent
+ *
+ * This module handles Kaiban platform activities and card workflows for the
+ * Pilot Sourcing Agent. It processes card activities and manages the card lifecycle.
+ *
+ * @module agents/sourcing-freelance-pilot/controller/kaiban-controller
+ */
+
 import {
   Activity,
   ActivityActor,
@@ -6,9 +15,9 @@ import {
   createKaibanClient,
   KaibanClient,
 } from '@kaiban/sdk';
-import { createLogger } from 'src/shared/logger';
+import { createLogger } from '../../../shared/logger';
 
-import { callAirportServicesAgent } from './agent';
+import { processPilotSourcingRequest } from './agent';
 
 /**
  * Kanban board column keys representing different card states
@@ -18,17 +27,17 @@ const DOING_COLUMN_KEY = 'doing';
 const DONE_COLUMN_KEY = 'done';
 const BLOCKED_COLUMN_KEY = 'blocked';
 
-const logger = createLogger('AirportServicesKaibanController');
+const logger = createLogger('PilotSourcingKaibanController');
 
 /**
  * Controller responsible for managing Kaiban activities and card workflows.
  * Handles the complete lifecycle of cards from creation to completion or blocking.
  *
- * @class AirportServicesKaibanController
- * @description Orchestrates the interaction between the Kaiban platform and the Airport Services Advisor Agent.
+ * @class PilotSourcingKaibanController
+ * @description Orchestrates the interaction between the Kaiban platform and the Pilot Sourcing Agent.
  * Listens to card activities and processes them through various workflow states.
  */
-export class AirportServicesKaibanController {
+export class PilotSourcingKaibanController {
   /**
    * Private constructor to enforce factory pattern usage via build() method
    * @param kaibanActor - Actor representing the agent in Kaiban activities
@@ -40,27 +49,27 @@ export class AirportServicesKaibanController {
   ) {}
 
   /**
-   * Factory method to create and initialize an AirportServicesKaibanController instance.
+   * Factory method to create and initialize a PilotSourcingKaibanController instance.
    * Validates environment configuration and establishes connection with Kaiban platform.
    *
-   * @returns Promise<AirportServicesKaibanController> - Fully initialized controller ready to process activities
+   * @returns Promise<PilotSourcingKaibanController> - Fully initialized controller ready to process activities
    * @throws {Error} When required environment variables are missing or agent is not found
    *
    * @example
-   * const controller = await AirportServicesKaibanController.build();
+   * const controller = await PilotSourcingKaibanController.build();
    * await controller.processKaibanActivity(activity);
    */
   static async build() {
     const tenant = process.env.KAIBAN_TENANT;
     const token = process.env.KAIBAN_API_TOKEN;
-    const agentId = process.env.KAIBAN_AIRPORT_SERVICES_AGENT_ID || process.env.KAIBAN_AGENT_ID;
+    const agentId = process.env.KAIBAN_PILOT_SOURCING_AGENT_ID || process.env.KAIBAN_AGENT_ID;
     let baseUrl = process.env.KAIBAN_API_URL;
 
     // Validate required environment configuration
     if (!tenant || !token || !agentId) {
       throw new Error(
         `Kaiban integration configuration is missing, please check your .env file. 
-        Make sure to set KAIBAN_TENANT, KAIBAN_API_TOKEN and KAIBAN_AIRPORT_AGENT_ID (or KAIBAN_AGENT_ID) properly.`,
+        Make sure to set KAIBAN_TENANT, KAIBAN_API_TOKEN and KAIBAN_PILOT_SOURCING_AGENT_ID (or KAIBAN_AGENT_ID) properly.`,
       );
     }
 
@@ -85,8 +94,8 @@ export class AirportServicesKaibanController {
       name: agent.name,
     };
 
-    logger.info({ tenant }, 'Airport Services Kaiban controller successfully created');
-    return new AirportServicesKaibanController(kaibanActor, kaibanClient);
+    logger.info({ tenant }, 'Pilot Sourcing Kaiban controller successfully created');
+    return new PilotSourcingKaibanController(kaibanActor, kaibanClient);
   }
 
   /**
@@ -123,8 +132,8 @@ export class AirportServicesKaibanController {
    * @description Workflow stages:
    * 1. Validation: Ensures card has description, is in TODO column, and wasn't created by this agent
    * 2. DOING stage: Moves card to DOING column and updates status
-   * 3. Processing: Invokes Airport Services Advisor Agent with card description
-   * 4. DONE stage: Updates card with agent response, moves to DONE, logs costs
+   * 3. Processing: Invokes Pilot Sourcing Agent with card description
+   * 4. DONE stage: Updates card with agent response, moves to DONE
    * 5. BLOCKED stage: On error, moves card to BLOCKED column for manual intervention
    *
    * @private
@@ -183,22 +192,17 @@ export class AirportServicesKaibanController {
     ]);
 
     try {
-      // STAGE 2: Invoke AI agent to process the card's request
-      const { response, usage } = await callAirportServicesAgent(card.description);
-
-      // Calculate LLM costs for transparency and budget tracking
-      const { totalCost, totalTokens, costsByModel } = this.kaibanClient.costs.calculateCosts([
-        usage,
-      ]);
+      // STAGE 2: Invoke Pilot Sourcing Agent to process the card's request
+      const result = await processPilotSourcingRequest(card.description);
 
       // STAGE 3: Update card with agent's response and mark as complete
-      this.kaibanClient.cards.update(card.id, {
-        result: response,
+      await this.kaibanClient.cards.update(card.id, {
+        result: result,
         column_key: DONE_COLUMN_KEY,
         status: CardStatus.DONE,
       });
 
-      // Log completion activities with cost metrics for reporting
+      // Log completion activities
       await this.kaibanClient.cards.createBatchActivities(card.id, [
         {
           type: ActivityType.CARD_STATUS_CHANGED,
@@ -227,27 +231,6 @@ export class AirportServicesKaibanController {
               old_value: card.column_key,
             },
           ],
-        },
-        {
-          type: ActivityType.THREAD_STEP_COSTS,
-          description: `Registered thread costs for airport services recommendation step`,
-          board_id: card.board_id,
-          team_id: card.team_id,
-          actor: this.kaibanActor,
-          metadata: {
-            step_name: 'airportServicesRecommendation',
-            costs: Object.values(costsByModel).map((cost) => ({
-              model: cost.model,
-              input_tokens: cost.inputTokens,
-              output_tokens: cost.outputTokens,
-              total_tokens: cost.totalTokens,
-              input_cost: cost.inputCost,
-              output_cost: cost.outputCost,
-              total_cost: cost.totalCost,
-            })),
-            total_cost: totalCost,
-            total_tokens: totalTokens,
-          },
         },
       ]);
     } catch (error) {
@@ -290,10 +273,7 @@ export class AirportServicesKaibanController {
       ]);
 
       // Log detailed error for troubleshooting
-      logger.error(
-        { error, cardId: card.id },
-        'Failed to process card with airport services advisor agent',
-      );
+      logger.error({ error, cardId: card.id }, 'Failed to process card with pilot sourcing agent');
     }
   }
 }
