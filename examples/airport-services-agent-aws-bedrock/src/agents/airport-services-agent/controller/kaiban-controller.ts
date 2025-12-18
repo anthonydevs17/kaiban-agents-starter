@@ -60,7 +60,7 @@ export class AirportServicesKaibanController {
     if (!tenant || !token || !agentId) {
       throw new Error(
         `Kaiban integration configuration is missing, please check your .env file. 
-        Make sure to set KAIBAN_TENANT, KAIBAN_API_TOKEN and KAIBAN_AIRPORT_AGENT_ID (or KAIBAN_AGENT_ID) properly.`,
+        Make sure to set KAIBAN_TENANT, KAIBAN_API_TOKEN and KAIBAN_AIRPORT_SERVICES_AGENT_ID (or KAIBAN_AGENT_ID) properly.`,
       );
     }
 
@@ -192,7 +192,7 @@ export class AirportServicesKaibanController {
       ]);
 
       // STAGE 3: Update card with agent's response and mark as complete
-      this.kaibanClient.cards.update(card.id, {
+      await this.kaibanClient.cards.update(card.id, {
         result: response,
         column_key: DONE_COLUMN_KEY,
         status: CardStatus.DONE,

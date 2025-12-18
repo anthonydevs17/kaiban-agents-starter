@@ -192,7 +192,7 @@ export class KaibanController {
       ]);
 
       // STAGE 3: Update card with agent's response and mark as complete
-      this.kaibanClient.cards.update(card.id, {
+      await this.kaibanClient.cards.update(card.id, {
         result: response,
         column_key: DONE_COLUMN_KEY,
         status: CardStatus.DONE,
@@ -235,7 +235,7 @@ export class KaibanController {
           team_id: card.team_id,
           actor: this.kaibanActor,
           metadata: {
-            step_name: 'visitPlning',
+            step_name: 'visitPlanning',
             costs: Object.values(costsByModel).map((cost) => ({
               model: cost.model,
               input_tokens: cost.inputTokens,
