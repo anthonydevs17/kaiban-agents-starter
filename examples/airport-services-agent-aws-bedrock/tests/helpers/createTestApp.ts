@@ -1,10 +1,10 @@
 import { A2AExpressApp } from '@a2a-js/sdk/server/express';
 import express from 'express';
 
-import { createSampleAgentHandler } from '../../src/agents/sample/handler';
+import { createAirportServicesAgentHandler } from '../../src/agents/airport-services-agent/handler';
 
 /**
- * Creates an Express app with the Sample Agent mounted under its A2A base path.
+ * Creates an Express app with the Airport Services Advisor Agent mounted under its A2A base path.
  * Used for integration testing.
  *
  * @param baseUrl - The base URL of the test server (e.g., 'http://127.0.0.1:12345')
@@ -24,11 +24,11 @@ export function createTestApp(baseUrl: string) {
     next();
   });
 
-  // Mount Sample Agent
-  const agentPath = '/agents/sample/a2a';
+  // Mount Airport Services Advisor Agent
+  const agentPath = '/agents/airportServices/a2a';
   const agentUrl = `${baseUrl}${agentPath}`;
-  const sampleAgentHandler = createSampleAgentHandler(agentUrl);
-  new A2AExpressApp(sampleAgentHandler).setupRoutes(app, agentPath);
+  const airportServicesAgentHandler = createAirportServicesAgentHandler(agentUrl);
+  new A2AExpressApp(airportServicesAgentHandler).setupRoutes(app, agentPath);
 
   return app;
 }

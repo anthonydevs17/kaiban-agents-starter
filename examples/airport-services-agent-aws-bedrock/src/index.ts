@@ -1,8 +1,8 @@
 /**
- * @fileoverview Main Server Entry Point for Kaiban Agents
+ * @fileoverview Main Server Entry Point for Airport Services Advisor Agent
  *
  * This is the main application entry point that bootstraps the Express server
- * and configures the A2A (Agent-to-Agent) protocol endpoints for multiple agents.
+ * and configures the A2A (Agent-to-Agent) protocol endpoints for the Airport Services Advisor agent.
  *
  * The server provides:
  * - A2A protocol compliance for agent communication
@@ -16,7 +16,7 @@
 import 'dotenv/config';
 import express from 'express';
 
-import { setupSampleAgentRoutes } from './agents/sample/handler';
+import { setupAirportServicesAgentRoutes } from './agents/airport-services-agent/handler';
 import { createLogger } from './shared/logger';
 
 const logger = createLogger('A2A Server');
@@ -73,9 +73,9 @@ app.use((req, res, next) => {
  * @constant {number} port - Server port from environment variable or default 4000
  *
  * @description Available Endpoints:
- * - Sample Agent:
- *   - Discovery: GET /agents/sample/a2a/.well-known/agent-card.json
- *   - Execute: POST /agents/sample/a2a
+ * - Airport Services Advisor Agent:
+ *   - Discovery: GET /agents/airportServices/a2a/.well-known/agent-card.json
+ *   - Execute: POST /agents/airportServices/a2a
  *
  * @remarks Environment Variables:
  * - PORT: Server port (optional, defaults to 4000)
@@ -83,13 +83,12 @@ app.use((req, res, next) => {
  *   Used in agent card for external access. Useful for ngrok, tunneling, or production domains.
  * - KAIBAN_TENANT: Kaiban platform tenant identifier (required)
  * - KAIBAN_API_TOKEN: Authentication token for Kaiban API (required)
- * - KAIBAN_AGENT_ID: Unique identifier for Sample agent in Kaiban (required)
+ * - KAIBAN_AIRPORT_SERVICES_AGENT_ID: Unique identifier for Airport Services Advisor agent in Kaiban (required, falls back to KAIBAN_AGENT_ID)
  * - KAIBAN_API_URL: Kaiban API base URL (optional, defaults to https://${tenant}.kaiban.io/api)
- *
- * @remarks
- * This is a template/starter project. For working examples, see:
- * - examples/visit-planner-agent/ - Mastra + OpenAI implementation
- * - examples/airport-services-agent/ - AWS Bedrock + Claude implementation
+ * - AWS_REGION: AWS region for Bedrock (optional, defaults to us-east-1)
+ * - AWS_ACCESS_KEY_ID: AWS access key for Bedrock (required)
+ * - AWS_SECRET_ACCESS_KEY: AWS secret key for Bedrock (required)
+ * - BEDROCK_MODEL_ID: AWS Bedrock model ID (optional, defaults to us.anthropic.claude-3-5-haiku-20241022-v1:0)
  */
 const port = process.env.PORT || 4000;
 let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
@@ -98,7 +97,7 @@ let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
  * A2A (Agent-to-Agent) Protocol Routes Configuration
  *
  * @description Sets up the A2A protocol endpoints following Google's A2A specification:
- * - **Sample Agent**: POST /agents/sample/a2a, GET /agents/sample/a2a/.well-known/agent-card.json
+ * - **Airport Services Advisor Agent**: POST /agents/airportServices/a2a, GET /agents/airportServices/a2a/.well-known/agent-card.json
  *
  * The A2AExpressApp automatically creates these endpoints:
  * - Agent discovery via .well-known/agent-card.json
@@ -109,7 +108,7 @@ let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
 
 app.listen(port, async () => {
   // Setup agent routes
-  const sample = setupSampleAgentRoutes(app, baseUrl);
+  const airportServices = setupAirportServicesAgentRoutes(app, baseUrl);
 
   console.log(`
    _  __     _ _                 
@@ -127,13 +126,9 @@ app.listen(port, async () => {
   
   A2A Server Endpoints:
   ------------------------------------------------------------
-  Sample Agent (Template):
-    -> Card:  ${sample.cardUrl}
-    -> Agent: ${sample.agentUrl}
-  
-  For working examples, see:
-  - examples/visit-planner-agent/
-  - examples/airport-services-agent/
+  Airport Services Advisor Agent:
+    -> Card:  ${airportServices.cardUrl}
+    -> Agent: ${airportServices.agentUrl}
   ------------------------------------------------------------
   `);
   logger.info(`🚀 Listening Requests`);

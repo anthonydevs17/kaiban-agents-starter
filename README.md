@@ -10,3 +10,14 @@ A production-ready starter template for building agents that integrate with the 
 ## 📚 Documentation
 
 Follow the complete guide at: **[https://docs.kaiban.io/get-started/quick-start](https://docs.kaiban.io/get-started/quick-start)**
+
+## 🎯 Examples
+
+Check out the [examples directory](./examples/) for complete, ready-to-run projects demonstrating how to use this starter with custom agents using different LLM SDKs:
+
+- **KaibanJS Workflows** - Airline revenue management agent with multi-step workflows
+- **AWS Bedrock** - Airport services agent using AWS Bedrock Runtime
+- **KaibanJS Teams** - Freelance pilot sourcing agent with collaborative teams
+- **Mastra + OpenAI** - Visit planner agent using Mastra framework
+
+Each example is an independent project that you can download and run directly. See the [examples README](./examples/README.md) for detailed information about each example.

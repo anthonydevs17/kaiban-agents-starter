@@ -1,14 +1,15 @@
 /**
- * @fileoverview Main Server Entry Point for Kaiban Agents
+ * @fileoverview Main Server Entry Point for Pilot Sourcing Agent
  *
  * This is the main application entry point that bootstraps the Express server
- * and configures the A2A (Agent-to-Agent) protocol endpoints for multiple agents.
+ * and configures the A2A (Agent-to-Agent) protocol endpoints for the Pilot Sourcing agent.
  *
  * The server provides:
  * - A2A protocol compliance for agent communication
  * - RESTful endpoints for agent card discovery
  * - CORS support for cross-origin requests
  * - Integration with Kaiban platform
+ * - Sample Excel file serving for testing
  *
  * @module index
  */
@@ -16,7 +17,7 @@
 import 'dotenv/config';
 import express from 'express';
 
-import { setupSampleAgentRoutes } from './agents/sample/handler';
+import { setupPilotSourcingAgentRoutes } from './agents/sourcing-freelance-pilot/handler';
 import { createLogger } from './shared/logger';
 
 const logger = createLogger('A2A Server');
@@ -73,9 +74,10 @@ app.use((req, res, next) => {
  * @constant {number} port - Server port from environment variable or default 4000
  *
  * @description Available Endpoints:
- * - Sample Agent:
- *   - Discovery: GET /agents/sample/a2a/.well-known/agent-card.json
- *   - Execute: POST /agents/sample/a2a
+ * - Pilot Sourcing Agent:
+ *   - Discovery: GET /agents/pilotSourcing/a2a/.well-known/agent-card.json
+ *   - Execute: POST /agents/pilotSourcing/a2a
+ *   - Sample Excel: GET /agents/pilotSourcing/samples/input-pilots.xlsx
  *
  * @remarks Environment Variables:
  * - PORT: Server port (optional, defaults to 4000)
@@ -83,13 +85,9 @@ app.use((req, res, next) => {
  *   Used in agent card for external access. Useful for ngrok, tunneling, or production domains.
  * - KAIBAN_TENANT: Kaiban platform tenant identifier (required)
  * - KAIBAN_API_TOKEN: Authentication token for Kaiban API (required)
- * - KAIBAN_AGENT_ID: Unique identifier for Sample agent in Kaiban (required)
+ * - KAIBAN_PILOT_SOURCING_AGENT_ID: Unique identifier for Pilot Sourcing agent in Kaiban (required, falls back to KAIBAN_AGENT_ID)
  * - KAIBAN_API_URL: Kaiban API base URL (optional, defaults to https://${tenant}.kaiban.io/api)
- *
- * @remarks
- * This is a template/starter project. For working examples, see:
- * - examples/visit-planner-agent/ - Mastra + OpenAI implementation
- * - examples/airport-services-agent/ - AWS Bedrock + Claude implementation
+ * - OPENAI_API_KEY: OpenAI API key for KaibanJS workflows (required)
  */
 const port = process.env.PORT || 4000;
 let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
@@ -98,7 +96,7 @@ let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
  * A2A (Agent-to-Agent) Protocol Routes Configuration
  *
  * @description Sets up the A2A protocol endpoints following Google's A2A specification:
- * - **Sample Agent**: POST /agents/sample/a2a, GET /agents/sample/a2a/.well-known/agent-card.json
+ * - **Pilot Sourcing Agent**: POST /agents/pilotSourcing/a2a, GET /agents/pilotSourcing/a2a/.well-known/agent-card.json
  *
  * The A2AExpressApp automatically creates these endpoints:
  * - Agent discovery via .well-known/agent-card.json
@@ -109,7 +107,7 @@ let baseUrl = process.env.A2A_BASE_URL || `http://localhost:${port}`;
 
 app.listen(port, async () => {
   // Setup agent routes
-  const sample = setupSampleAgentRoutes(app, baseUrl);
+  const pilotSourcing = setupPilotSourcingAgentRoutes(app, baseUrl);
 
   console.log(`
    _  __     _ _                 
@@ -127,13 +125,10 @@ app.listen(port, async () => {
   
   A2A Server Endpoints:
   ------------------------------------------------------------
-  Sample Agent (Template):
-    -> Card:  ${sample.cardUrl}
-    -> Agent: ${sample.agentUrl}
-  
-  For working examples, see:
-  - examples/visit-planner-agent/
-  - examples/airport-services-agent/
+  Pilot Sourcing Agent:
+    -> Card:  ${pilotSourcing.cardUrl}
+    -> Agent: ${pilotSourcing.agentUrl}
+    -> Sample Excel: ${pilotSourcing.sampleFileUrl}
   ------------------------------------------------------------
   `);
   logger.info(`🚀 Listening Requests`);
