@@ -1,0 +1,8 @@
+langchain>=0.0.300
+langgraph>=0.0.10
+requests>=2.31.0
+python-dotenv>=1.0.0
+openai==2.8.1
+a2a-sdk[http-server]>=0.3.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
