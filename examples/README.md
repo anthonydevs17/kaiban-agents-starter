@@ -2,7 +2,7 @@
 
 This directory contains independent example projects that demonstrate how to use the **Kaiban Agents Starter** with custom agents using different LLM SDKs or combinations of them.
 
-Each example is a complete and functional project that you can download and run directly. These examples showcase different approaches to integrating agents with the Kaiban platform using various frameworks and LLM providers.
+Each example is a complete and functional project that you can download and run directly. These examples showcase different approaches to integrating agents with the Kaiban platform using various frameworks and LLM providers. Some examples use the **Kaiban MCP** (Model Context Protocol) to perform card and board actions (get/move/update cards, create activities) directly from agents, instead of the `@kaiban/sdk` controller.
 
 ## 📦 Available Examples
 
@@ -63,6 +63,22 @@ A visit planner agent that uses the **Mastra** framework along with **OpenAI** a
 
 ---
 
+### 5. [Airline Group Booking Quote](./airline-group-booking-quote-mcp-kaibanjs/)
+
+**SDK:** KaibanJS Teams + **Kaiban MCP**
+
+An airline group booking quote agent that generates instant quotes from unstructured inquiries. Uses **KaibanJS teams** (sequential, no workflow) and **Kaiban MCP** for card lifecycle: get card, move card (todo → doing → done / blocked), update card with quote, create card activities. Connects to the Kaiban.io MCP server via **Streamable HTTP** (`@modelcontextprotocol/sdk`); tools are exposed to the agent with schemas derived from JSON Schema (Zod) so the LLM receives correct parameter definitions.
+
+**Features:**
+
+- **Kaiban MCP**: card/column/activities from agents (no `@kaiban/sdk` controller); Streamable HTTP transport
+- Extract and validate group booking details (origin, destination, dates, pax) in one agent/task
+- Mock availability and pricing tools (read-only)
+- Sequential team: Get card & move to doing → Extract & Validate → Availability & Pricing → Quote → Update card & move to done
+- A2A protocol and Kaiban.io integration; on error, executor moves card to blocked via MCP
+
+---
+
 ## 🚀 How to Use the Examples
 
 Each example is an independent project. To use any of them:
@@ -95,6 +111,7 @@ Each example is an independent project. To use any of them:
 The examples cover different integration options:
 
 - **KaibanJS**: Native Kaiban framework for workflows and teams
+- **Kaiban MCP**: [Model Context Protocol](https://modelcontextprotocol.io/) server provided by Kaiban.io for card and board actions (get/move/update cards, create activities). Used with `@modelcontextprotocol/sdk` and **Streamable HTTP** transport; agents invoke MCP tools directly. See the [Airline Group Booking Quote](./airline-group-booking-quote-mcp-kaibanjs/) example.
 - **AWS Bedrock**: Amazon Web Services LLM services
 - **Mastra**: Modern framework for building agents
 - **OpenAI**: Integration with OpenAI models
