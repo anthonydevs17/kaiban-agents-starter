@@ -79,6 +79,24 @@ An airline group booking quote agent that generates instant quotes from unstruct
 
 ---
 
+### 6. [Damaged Baggage Compensation](./damaged-baggage-compensation-mcp-kaibanjs/)
+
+**SDK:** KaibanJS Teams + **Kaiban MCP**
+
+A damaged baggage compensation agent that validates claims and generates instant compensation offers. Uses **KaibanJS teams** (sequential) and **Kaiban MCP** for card lifecycle. Tools: mock airline policy and historical payouts; **Tavily** for real-time product market prices (1 call per product, max 5). Inspired by the [Kaiban use case: Automated Damaged Baggage Compensation](https://www.kaiban.io/use-cases/damaged-baggage-compensation-automation).
+
+**Features:**
+
+- **Kaiban MCP**: card/column/activities from agents; Streamable HTTP transport
+- Extract and validate claim (passenger, flight, damage description, damaged items)
+- Compensation calculation: airline policy (mock), historical payouts (mock), product prices via Tavily
+- LangChain `DynamicStructuredTool` for tools compatible with KaibanJS
+- Sequential team: Get card & move to doing → Extract & Validate → Calculate compensation → Generate offer → Update card & move to done
+- A2A protocol; on error, executor moves card to blocked via MCP
+- Sample claims in `samples/` for testing
+
+---
+
 ## 🚀 How to Use the Examples
 
 Each example is an independent project. To use any of them:

@@ -18,6 +18,7 @@ Check out the [examples directory](./examples/) for complete, ready-to-run proje
 - **KaibanJS Workflows** - Airline revenue management agent with multi-step workflows
 - **AWS Bedrock** - Airport services agent using AWS Bedrock Runtime
 - **KaibanJS Teams** - Freelance pilot sourcing agent with collaborative teams
+- **KaibanJS Teams + Kaiban MCP** - Airline group booking quote agent; damaged baggage compensation agent (policy, historical payouts, Tavily for prices)
 - **Mastra + OpenAI** - Visit planner agent using Mastra framework
 
 Each example is an independent project that you can download and run directly. See the [examples README](./examples/README.md) for detailed information about each example.

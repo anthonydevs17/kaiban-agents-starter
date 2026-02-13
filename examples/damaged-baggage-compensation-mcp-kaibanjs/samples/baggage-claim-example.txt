@@ -1,0 +1,8 @@
+Claim #BGC-2025-00123
+Passenger: John Smith
+PNR: ABC123 | Flight: AA100 | Date: 2025-02-10
+Damage: Wheel broken, handle cracked, small tear on side pocket
+
+Damaged items:
+1. Samsonite 28" spinner (2 years old)
+2. Nike backpack (6 months old)
